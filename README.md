@@ -24,6 +24,4 @@ fraud-detection/
 ├── requirements.txt
 └── README.md
 
- 🚀 Deployment:
-1. Upload to GitHub
-2. Deploy on https://streamlit.io/cloud with app path: `app/app.py`
+
