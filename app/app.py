@@ -1,9 +1,8 @@
-import shap
-import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 import joblib
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
 
 # ---------------------- App Configuration ----------------------
 st.set_page_config(page_title="Credit Card Fraud Detection", page_icon="💳", layout="wide")
@@ -41,7 +40,6 @@ if uploaded_file:
     df['scaled_time'] = StandardScaler().fit_transform(df['Time'].values.reshape(-1, 1))
     df.drop(['Time', 'Amount'], axis=1, inplace=True)
 
-    # Reorder scaled columns
     scaled_amount = df.pop('scaled_amount')
     scaled_time = df.pop('scaled_time')
     df.insert(0, 'scaled_amount', scaled_amount)
@@ -58,19 +56,6 @@ if uploaded_file:
     st.subheader("🔍 Prediction Results")
     st.dataframe(df[['Prediction']])
     st.success(f"✅ Fraud Cases Detected: {sum(df['Prediction'])}")
-
-    # ---------------------- SHAP Explanation ----------------------
-    if sum(df['Prediction']) > 0:
-        st.subheader("📊 SHAP Explanation (First Fraud Prediction)")
-        fraud_index = df[df['Prediction'] == 1].index[0]
-        explainer = shap.Explainer(model)
-        shap_values = explainer(features)
-
-        fig, ax = plt.subplots()
-        shap.plots._waterfall.waterfall_legacy(shap_values[fraud_index], max_display=10, show=False)
-        st.pyplot(fig)
-    else:
-        st.info("✅ No fraud detected to explain.")
 
     # ---------------------- Fraud by Country ----------------------
     if 'Country' in df.columns:
