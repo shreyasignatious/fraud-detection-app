@@ -5,34 +5,31 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import shap
 
-# ---------------------- Custom Background ----------------------
-def add_bg_from_url():
+# ---------------------- UI Background ----------------------
+def add_custom_style():
     st.markdown(
-         f"""
-         <style>
-         .stApp {{
-             background-image: url("https://www.transparenttextures.com/patterns/clean-gray-paper.png");
-             background-size: cover;
-         }}
-         </style>
-         """,
-         unsafe_allow_html=True
-     )
+        """
+        <style>
+        .stApp {
+            background: linear-gradient(to right, #f7f8fc, #e0f7ff);
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-add_bg_from_url()
+add_custom_style()
 
 # ---------------------- Sidebar ----------------------
 st.sidebar.title("📌 About")
 st.sidebar.info(
-    "This app detects fraudulent credit card transactions using a trained ML model.\n\n"
-    "💡 Upload your transaction CSV and get instant results.\n\n"
-    "🔍 Built with XGBoost, Streamlit, SHAP, and sklearn."
+    "This app detects fraudulent credit card transactions using XGBoost and SHAP.\n\n"
+    "🔍 Built with Streamlit, scikit-learn, SHAP & matplotlib."
 )
-st.sidebar.markdown("[📁 View on GitHub](https://github.com/shreyasignatious/fraud-detection-app)")
+st.sidebar.markdown("[📁 GitHub Repo](https://github.com/shreyasignatious/fraud-detection-app)")
 
 # ---------------------- Header ----------------------
 st.markdown("<h1 style='text-align: center;'>💳 Credit Card Fraud Detection App</h1>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: center;'>Upload a CSV file and detect potential fraud transactions instantly.</h4>", unsafe_allow_html=True)
 
 # ---------------------- Load Model ----------------------
 @st.cache_resource
@@ -49,26 +46,23 @@ if not model:
 
 # ---------------------- File Upload ----------------------
 st.subheader("📂 Upload a CSV file")
-uploaded_file = st.file_uploader("Upload a CSV to start prediction", type=["csv"])
+uploaded_file = st.file_uploader("Upload a CSV", type=["csv"])
 
-# ---------------------- Download Sample CSV ----------------------
+# ---------------------- Sample CSV ----------------------
 try:
     with open("creditcard_with_country_sample.csv", "rb") as file:
-        st.download_button(label="📥 Download Sample CSV",
-                           data=file,
-                           file_name="sample_creditcard.csv",
-                           mime="text/csv")
+        st.download_button("📥 Download Sample CSV", data=file, file_name="sample_creditcard.csv", mime="text/csv")
 except FileNotFoundError:
-    st.info("⚠️ Sample CSV not found in repository. Add 'creditcard_with_country_sample.csv' to enable this feature.")
+    st.info("⚠️ Sample CSV not found in repo.")
 
-# ---------------------- Prediction Workflow ----------------------
+# ---------------------- Prediction ----------------------
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
     st.subheader("📄 Uploaded Data Preview")
     st.dataframe(df.head())
 
     if 'Amount' not in df.columns or 'Time' not in df.columns:
-        st.error("❌ 'Amount' and 'Time' columns are required in the uploaded file.")
+        st.error("❌ Missing 'Amount' or 'Time' column.")
         st.stop()
 
     # Preprocessing
@@ -80,42 +74,45 @@ if uploaded_file:
     df.insert(0, 'scaled_amount', scaled_amount)
     df.insert(1, 'scaled_time', scaled_time)
 
-    # Features
     X = df.drop(['Class', 'Country'], axis=1, errors='ignore')
     X = X.select_dtypes(include=['number', 'bool'])
 
     # Prediction
     predictions = model.predict(X)
     df['Prediction'] = predictions
+    fraud = sum(df['Prediction'])
 
-    # ---------------------- Metrics ----------------------
+    # Alerts
+    if fraud > 0:
+        st.toast("🚨 Fraud detected!", icon="⚠️")
+        st.warning(f"🚨 {fraud} Fraud Cases Found")
+    else:
+        st.success("✅ No fraudulent transactions found.")
+
+    # Metrics
     st.subheader("📊 Summary")
     total = len(df)
-    fraud = sum(df['Prediction'])
-    st.metric("🧾 Total Transactions", total)
-    st.metric("🚨 Fraudulent Transactions", fraud)
-    st.metric("✅ Legitimate Transactions", total - fraud)
+    st.metric("🧾 Total", total)
+    st.metric("🚨 Fraudulent", fraud)
+    st.metric("✅ Legitimate", total - fraud)
 
-    # ---------------------- Results Table ----------------------
+    # Results Table
     st.subheader("🔍 Prediction Results")
     st.dataframe(df[['Prediction']])
-    st.success(f"✅ Fraud Cases Detected: {fraud}")
 
-    # ---------------------- SHAP Explanation ----------------------
+    # SHAP
     if fraud > 0:
-        st.subheader("📈 SHAP Explanation for First Fraud Case")
+        st.subheader("📈 SHAP Explanation (First Fraud)")
         fraud_index = df[df['Prediction'] == 1].index[0]
         explainer = shap.Explainer(model)
         shap_values = explainer(X)
         fig, ax = plt.subplots()
         shap.plots._waterfall.waterfall_legacy(shap_values[fraud_index], max_display=10, show=False)
         st.pyplot(fig)
-    else:
-        st.info("✅ No fraud cases to explain with SHAP.")
 
-    # ---------------------- Country-wise Chart ----------------------
+    # Country-wise Chart
     if 'Country' in df.columns:
-        st.subheader("🌍 Fraud Cases by Country")
+        st.subheader("🌍 Fraud by Country")
         flag_map = {
             "India": "🇮🇳", "USA": "🇺🇸", "UK": "🇬🇧",
             "Germany": "🇩🇪", "France": "🇫🇷",
@@ -126,6 +123,6 @@ if uploaded_file:
         fraud_by_country.index = [f"{flag_map.get(c, '')} {c}" for c in fraud_by_country.index]
         st.bar_chart(fraud_by_country)
     else:
-        st.info("ℹ️ 'Country' column not found to show fraud by country.")
+        st.info("ℹ️ 'Country' column not found.")
 else:
-    st.info("📥 Please upload a CSV file above to begin fraud detection.")
+    st.info("📥 Please upload a CSV file to begin fraud detection.")
