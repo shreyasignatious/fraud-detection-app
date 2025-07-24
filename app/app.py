@@ -5,31 +5,16 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import shap
 
-# ---------------------- UI Background ----------------------
-def add_custom_style():
-    st.markdown(
-        """
-        <style>
-        .stApp {
-            background: linear-gradient(to right, #f7f8fc, #e0f7ff);
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-add_custom_style()
-
 # ---------------------- Sidebar ----------------------
 st.sidebar.title("📌 About")
 st.sidebar.info(
-    "This app detects fraudulent credit card transactions using XGBoost and SHAP.\n\n"
-    "🔍 Built with Streamlit, scikit-learn, SHAP & matplotlib."
+    "This app detects fraudulent credit card transactions using a trained XGBoost model.\n\n"
+    "Built with Streamlit, scikit-learn, SHAP, and matplotlib."
 )
 st.sidebar.markdown("[📁 GitHub Repo](https://github.com/shreyasignatious/fraud-detection-app)")
 
 # ---------------------- Header ----------------------
-st.markdown("<h1 style='text-align: center;'>💳 Credit Card Fraud Detection App</h1>", unsafe_allow_html=True)
+st.title("💳 Credit Card Fraud Detection App")
 
 # ---------------------- Load Model ----------------------
 @st.cache_resource
@@ -82,17 +67,15 @@ if uploaded_file:
     df['Prediction'] = predictions
     fraud = sum(df['Prediction'])
 
-    # Alerts
     if fraud > 0:
-        st.toast("🚨 Fraud detected!", icon="⚠️")
-        st.warning(f"🚨 {fraud} Fraud Cases Found")
+        st.warning(f"🚨 {fraud} Fraud Cases Detected")
     else:
         st.success("✅ No fraudulent transactions found.")
 
     # Metrics
     st.subheader("📊 Summary")
     total = len(df)
-    st.metric("🧾 Total", total)
+    st.metric("🧾 Total Transactions", total)
     st.metric("🚨 Fraudulent", fraud)
     st.metric("✅ Legitimate", total - fraud)
 
@@ -125,4 +108,4 @@ if uploaded_file:
     else:
         st.info("ℹ️ 'Country' column not found.")
 else:
-    st.info("📥 Please upload a CSV file to begin fraud detection.")
+    st.info("📥 Please upload a CSV file above to begin fraud detection.")
