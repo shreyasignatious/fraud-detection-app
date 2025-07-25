@@ -38,10 +38,10 @@ Built as part of the **Elevate Internship Program 2025**.
 ## 📂 Project Structure
 
 fraud-detection-app/
-├── app.py # Main Streamlit app
-├── requirements.txt # All dependencies
-├── models/
-│ └── model.pkl # Trained XGBoost model
-├── creditcard_with_country_sample.csv # Optional: sample test file
-├── report.pdf # Internship report
-└── README.md
+├── app/                     ✅ contains `app.py`
+├── models/                  ✅ contains `model.pkl`
+├── utils/, notebooks/       ✅ optional support folders
+├── creditcard_with_country_sample.csv  ✅ sample input
+├── requirements.txt         ✅ for deployment
+├── README.md                
+└── report.pdf     ✅ internship report 
