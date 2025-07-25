@@ -1,27 +1,47 @@
-💳 Credit Card Fraud Detection App
+# 💳 Credit Card Fraud Detection App
 
-This is a Streamlit-based web application that allows users to upload a credit card transaction CSV and get predictions on which transactions are fraudulent.
+This is a machine learning-powered web application that detects fraudulent credit card transactions. Users can upload a CSV file, get real-time fraud predictions, and view SHAP-based explanations to understand why a transaction was flagged.
 
-🔍 Features:
-- Upload a CSV file (with Time, Amount, V1-V28, Country)
-- Preprocessing: scaling, column reordering
-- Fraud prediction using a trained XGBoost model
-- SHAP explainability plot for the first detected fraud
-- Fraud-by-country bar chart with flag emojis
-- User-friendly, fast, and deployable on Streamlit Cloud
+Built as part of the **Elevate Internship Program 2025**.
 
-🧠 Technologies:
-- Python, Streamlit, XGBoost, SHAP, Matplotlib, Pandas, Scikit-learn
+---
 
-📦 File Structure:
-fraud-detection/
-├── app/
-│ └── app.py
+## 🚀 Live Demo
+
+🔗 [Click here to try the app](https://fraud-detection-app-named4btnexxrmgb8sa5xt.streamlit.app/)
+
+---
+
+## 📌 Features
+
+- Upload your own transaction CSV file
+- Detects fraudulent transactions using XGBoost
+- SHAP explanation for model interpretability
+- Country-wise fraud detection chart with emoji flags
+- Metrics summary for fraud vs legitimate
+- Clean and responsive Streamlit interface
+
+---
+
+## 🛠️ Tools & Technologies
+
+- Python 3.10
+- Streamlit
+- XGBoost
+- Scikit-learn
+- SHAP
+- Pandas, NumPy
+- Matplotlib
+
+---
+
+## 📂 Project Structure
+
+fraud-detection-app/
+├── app.py # Main Streamlit app
+├── requirements.txt # All dependencies
 ├── models/
-│ └── model.pkl
-├── data/
-│ └── creditcard_with_country.csv
-├── requirements.txt
+│ └── model.pkl # Trained XGBoost model
+├── creditcard_with_country_sample.csv # Optional: sample test file
+├── report.pdf # Internship report
 └── README.md
-
-
