@@ -44,4 +44,4 @@ fraud-detection-app/
 ├── creditcard_with_country_sample.csv  ✅ sample input
 ├── requirements.txt         ✅ for deployment
 ├── README.md                
-└── report.pdf     ✅ internship report 
+└── Fraud_Detection_Project_Report.pdf     ✅ internship report 
